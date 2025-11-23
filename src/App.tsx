@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import './App.css';
+import GameSetup from './components/GameSetup';
+import TournamentView from './components/TournamentView';
+import { clearTournament, createTournament, loadTournament } from './tournamentLogic';
+import type { Tournament } from './types';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [tournament, setTournament] = useState<Tournament | null>(() => loadTournament());
+
+  const handleStartTournament = (gameName: string, players: string[]) => {
+    const newTournament = createTournament(gameName, players);
+    setTournament(newTournament);
+  };
+
+  const handleReset = () => {
+    clearTournament();
+    setTournament(null);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="app">
+      <header className="app-header">
+        <h1>🏆 Tie-Sheet Generator</h1>
+        <p>Multi-Round Tournament Management</p>
+      </header>
+
+      <main className="app-main">
+        {!tournament ? (
+          <GameSetup onStart={handleStartTournament} />
+        ) : (
+          <TournamentView tournament={tournament} onUpdate={setTournament} onReset={handleReset} />
+        )}
+      </main>
+
+      <footer className="app-footer">
+        <p>© 2025 Tie-Sheet Generator | Built for any game, any number of players</p>
+      </footer>
+    </div>
+  );
 }
 
-export default App
+export default App;
