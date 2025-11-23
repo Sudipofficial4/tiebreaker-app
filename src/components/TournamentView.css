@@ -225,26 +225,41 @@
   display: flex;
   gap: 1rem;
   margin-top: 2rem;
+  flex-wrap: wrap;
 }
 
 .action-buttons button {
   flex: 1;
+  min-width: 150px;
   padding: 1rem;
   border: none;
   border-radius: 8px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .action-buttons button:hover {
   transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .export-btn {
   background: #3498db;
   color: white;
+}
+
+.export-btn:hover {
+  background: #2980b9;
+}
+
+.export-btn.json {
+  background: #9b59b6;
+}
+
+.export-btn.json:hover {
+  background: #8e44ad;
 }
 
 .reset-btn {

@@ -1,4 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 import {
   advanceRound,
   isRoundComplete,
@@ -18,6 +20,7 @@ interface TournamentViewProps {
 function TournamentView({ tournament, onUpdate, onReset }: TournamentViewProps) {
   const currentRoundData = tournament.rounds[tournament.currentRound - 1];
   const roundComplete = isRoundComplete(currentRoundData.matches);
+  const tournamentViewRef = useRef<HTMLDivElement>(null);
 
   // Auto-save on every update
   useEffect(() => {
@@ -38,7 +41,7 @@ function TournamentView({ tournament, onUpdate, onReset }: TournamentViewProps) 
     }
   };
 
-  const handleExport = () => {
+  const handleExportJSON = () => {
     const dataStr = JSON.stringify(tournament, null, 2);
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
     const url = URL.createObjectURL(dataBlob);
@@ -47,6 +50,59 @@ function TournamentView({ tournament, onUpdate, onReset }: TournamentViewProps) 
     link.download = `${tournament.gameName.replace(/\s+/g, '_')}_tournament.json`;
     link.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleExportPDF = async () => {
+    if (!tournamentViewRef.current) return;
+
+    try {
+      // Show loading state
+      const loadingDiv = document.createElement('div');
+      loadingDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 9999; text-align: center;';
+      loadingDiv.innerHTML = '<h3>📄 Generating PDF...</h3><p>Please wait...</p>';
+      document.body.appendChild(loadingDiv);
+
+      // Capture the tournament view as canvas
+      const canvas = await html2canvas(tournamentViewRef.current, {
+        scale: 2,
+        logging: false,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+      });
+
+      // Calculate dimensions
+      const imgWidth = 210; // A4 width in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      // Create PDF
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgData = canvas.toDataURL('image/png');
+      
+      // Add image to PDF
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= 297; // A4 height
+
+      // Add new pages if content is longer than one page
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= 297;
+      }
+
+      // Save PDF
+      const fileName = `${tournament.gameName.replace(/\s+/g, '_')}_Round_${tournament.currentRound}.pdf`;
+      pdf.save(fileName);
+
+      // Remove loading state
+      document.body.removeChild(loadingDiv);
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      alert('Failed to generate PDF. Please try again.');
+    }
   };
 
   const handlePrint = () => {
@@ -77,8 +133,11 @@ function TournamentView({ tournament, onUpdate, onReset }: TournamentViewProps) 
             </div>
           </div>
           <div className="action-buttons">
-            <button className="export-btn" onClick={handleExport}>
-              Export Tournament Data
+            <button className="export-btn" onClick={handleExportPDF}>
+              📄 Export as PDF
+            </button>
+            <button className="export-btn json" onClick={handleExportJSON}>
+              💾 Export as JSON
             </button>
             <button className="reset-btn" onClick={onReset}>
               Start New Tournament
@@ -90,7 +149,7 @@ function TournamentView({ tournament, onUpdate, onReset }: TournamentViewProps) 
   }
 
   return (
-    <div className="tournament-view">
+    <div className="tournament-view" ref={tournamentViewRef}>
       <div className="tournament-header">
         <div className="tournament-info">
           <h2>{tournament.gameName}</h2>
@@ -103,8 +162,11 @@ function TournamentView({ tournament, onUpdate, onReset }: TournamentViewProps) 
           <button className="utility-btn" onClick={handlePrint}>
             🖨️ Print
           </button>
-          <button className="utility-btn" onClick={handleExport}>
-            💾 Export
+          <button className="utility-btn" onClick={handleExportPDF}>
+            � PDF
+          </button>
+          <button className="utility-btn" onClick={handleExportJSON}>
+            💾 JSON
           </button>
           <button className="utility-btn reset" onClick={onReset}>
             🔄 Reset
