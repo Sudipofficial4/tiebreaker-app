@@ -8,8 +8,16 @@
 .app-header {
   background: rgba(255, 255, 255, 0.95);
   padding: 1.5rem 2rem;
-  text-align: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+
+.app-header > div:first-child {
+  flex: 1;
+  text-align: center;
 }
 
 .app-header h1 {
@@ -25,9 +33,91 @@
   font-size: 1.1rem;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  white-space: nowrap;
+}
+
+.user-email {
+  color: #333;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.btn-logout {
+  padding: 8px 16px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.btn-logout:hover {
+  background: #5568d3;
+}
+
 .app-main {
   flex: 1;
   padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.tournament-controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.btn-dashboards,
+.btn-reset {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-dashboards {
+  background: #667eea;
+  color: white;
+}
+
+.btn-dashboards:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+}
+
+.btn-reset {
+  background: #f59e0b;
+  color: white;
+}
+
+.btn-reset:hover {
+  background: #d97706;
+  transform: translateY(-2px);
+}
+
+.dashboards-section {
+  margin-bottom: 32px;
+}
+
+.loading-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 18px;
+  color: white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .app-footer {
@@ -43,11 +133,31 @@
 }
 
 @media (max-width: 768px) {
+  .app-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
   .app-header h1 {
     font-size: 1.8rem;
   }
 
   .app-header p {
     font-size: 0.95rem;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .tournament-controls {
+    flex-direction: column;
+  }
+
+  .btn-dashboards,
+  .btn-reset {
+    width: 100%;
   }
 }
