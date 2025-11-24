@@ -18,15 +18,15 @@ export default function RunningMatches({ tournamentId }: RunningMatchesProps) {
         fetchMatches();
 
         // Subscribe to real-time updates
-        const subscription = supabase
-            .from('matches')
-            .on('*', () => {
+        const channel = supabase
+            .channel('running-matches')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'matches' }, () => {
                 fetchMatches();
             })
             .subscribe();
 
         return () => {
-            subscription.unsubscribe();
+            supabase.removeChannel(channel);
         };
     }, [tournamentId]);
 

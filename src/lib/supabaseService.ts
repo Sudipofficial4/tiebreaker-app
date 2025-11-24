@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import type { Tournament, DbTournament, DbPlayer, DbRound, DbMatch } from '../types';
+import type { Tournament, DbMatch } from '../types';
 
 /**
  * Create a new tournament in Supabase
@@ -221,15 +221,15 @@ export async function getCompletedMatches(tournamentId: string): Promise<DbMatch
 }
 
 /**
- * Subscribe to real-time match updates
+ * Subscribe to match updates for a tournament
  */
 export function subscribeToMatches(
     tournamentId: string,
     callback: (matches: DbMatch[]) => void
 ) {
-    return supabase
-        .from('matches')
-        .on('*', async () => {
+    const channel = supabase
+        .channel(`matches-${tournamentId}`)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'matches' }, async () => {
             const matches = await supabase
                 .from('matches')
                 .select('*')
@@ -237,4 +237,6 @@ export function subscribeToMatches(
             if (!matches.error) callback(matches.data || []);
         })
         .subscribe();
+    
+    return channel;
 }

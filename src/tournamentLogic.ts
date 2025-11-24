@@ -108,6 +108,8 @@ export function createTournament(gameName: string, players: string[]): Tournamen
   const { matches, byeHistory: updatedByeHistory } = generateMatches(players, byeHistory, 1);
 
   return {
+    id: '',
+    adminId: '',
     gameName,
     players,
     rounds: [

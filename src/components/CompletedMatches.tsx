@@ -15,15 +15,15 @@ export default function CompletedMatches({ tournamentId }: CompletedMatchesProps
         fetchMatches();
 
         // Subscribe to real-time updates
-        const subscription = supabase
-            .from('matches')
-            .on('*', () => {
+        const channel = supabase
+            .channel('completed-matches')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'matches' }, () => {
                 fetchMatches();
             })
             .subscribe();
 
         return () => {
-            subscription.unsubscribe();
+            supabase.removeChannel(channel);
         };
     }, [tournamentId]);
 
