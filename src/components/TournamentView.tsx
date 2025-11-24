@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
-import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
+import { useEffect, useRef } from 'react';
 import {
   advanceRound,
   isRoundComplete,
@@ -73,11 +73,11 @@ function TournamentView({ tournament, onUpdate, onReset }: TournamentViewProps) 
       // Calculate dimensions
       const imgWidth = 210; // A4 width in mm
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
+
       // Create PDF
       const pdf = new jsPDF('p', 'mm', 'a4');
       const imgData = canvas.toDataURL('image/png');
-      
+
       // Add image to PDF
       let heightLeft = imgHeight;
       let position = 0;
