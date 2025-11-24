@@ -30,7 +30,7 @@ function App() {
   }
 
   if (!user) {
-    return <Login onSuccess={() => {}} />;
+    return <Login onSuccess={() => { }} />;
   }
 
   return (

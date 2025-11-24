@@ -15,7 +15,7 @@
   gap: 2rem;
 }
 
-.app-header > div:first-child {
+.app-header>div:first-child {
   flex: 1;
   text-align: center;
 }
